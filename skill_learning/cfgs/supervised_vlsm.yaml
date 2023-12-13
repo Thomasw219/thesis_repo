@@ -1,0 +1,108 @@
+msg: 'Fixed bidirectional gru representation'
+# msg: 'svlsm - detach term and obs decoding; sl 40, kl 0.1, min std 0.1'
+
+# Skill model
+model_type: 'svlsm' # flsm (fixed length sm)/ vlsm (variable length sm) / svlsm (supervised vlsm)
+# load_path: './logs/svlsm_segmented_maze_trajs_prior_only_at_segmentations_06-07-2023_14-18-33/best_model.pth'
+load_path: ''
+load_model: False
+
+# Termination (segmentation) model
+# oracle_location: ./oracle_terminator2/less_compressive_model.pt
+# terminator_type: obs_actions # obs / obs_actions
+
+env_name: 'maze2d-medium-v1'
+exp_name: 'svlsm_maze_medium_variable_length'
+skill_length: 0 # 0 for variable lengths
+data_dir: './data/segmented/maze2d-medium-v1_masked.npy'
+
+# env_name: 'maze2d-large-v1'
+# exp_name: 'svlsm_maze_large_variable_length'
+# skill_length: 0 # 0 for variable lengths
+# data_dir: './data/segmented/maze2d-large-v1_masked.npy'
+
+max_iters: 1000000
+
+# CHECK TERMINATION LOSS
+
+# env_name: 'maze2d-medium-v1'
+# exp_name: 'svlsm_maze_medium_fixed_length'
+# skill_length: 31 # 0 for variable lengths
+# data_dir: './data/segmented/maze2d-medium-v1_fixed_length_masked.npy'
+
+# env_name: 'maze2d-large-v1'
+# exp_name: 'svlsm_maze_large_fixed_length'
+# skill_length: 29 # 0 for variable lengths
+# data_dir: './data/segmented/maze2d-large-v1_fixed_length_masked.npy'
+
+# ALSO MODIFY TERMINATION LOSS WEIGHT
+
+# Data
+# data_sub_traj_len: 128
+# load_generated_data: True
+# noisy: False # use data with noisy actions
+train_dataset_fraction: 1.00
+eval_every: 1
+data_loader:
+    batch_size: 512
+    num_workers: 0
+
+log_online: False
+base_dir: './logs/' # Log dir
+model_save_freq: 10000
+
+device_id: 0
+
+# HPs
+n_epochs: 50000
+
+grad_clip: 50
+
+optimizer:
+    lr: 1.e-3
+    weight_decay: 3.e-4 # 1.e-4
+
+scheduler_class: 'plateau' # cyclic or plateau
+
+cyclic:
+    base_lr: 0.00001
+    max_lr: 0.0003
+    step_size_up: 1000
+    cycle_momentum: False
+
+plateau:
+    mode: 'min'
+    factor: 0.9
+    patience: 10000
+
+
+model:
+    encoder_embedding_dim: 200
+    encoder_mlp_layers: [256, 256]
+    causal_encoder_rnn_hidden_dim: 200
+    noncausal_encoder_rnn_hidden_dim: 256
+    noncausal_encoder_rnn_num_layers: 1
+    skill_dim: 64
+    detach_skills: True
+    detach_termination_skills: True
+    skill_prior_layers: [256, 256]
+    skill_posterior_layers: [256, 256]
+    obs_decoder_layers: [256, 256]
+    actions_decoder_layers: [256, 256]
+    termination_decoder_layers: [256, 256]
+    termination_loss_coeff: 25.0
+    termination_loss_ratio: null
+    # termination_loss_coeff: 0.0
+    # termination_loss_ratio: null
+    skill_beta: 0.075
+    # skill_beta: 0.05
+    actions_loss_coeff: 1
+    obs_loss_coeff: 1
+    obs_std_min: 0.05
+    actions_std_min: 0.05
+    init_obs_std_min: 0.003 # std for the first two decodings # Warning: not being used
+    init_actions_std_min: null # Warning: not being used
+    train_prior_everywhere: False # SEEMED TO WORK IN OTHER TRAINING PARADIGM (SEGMETNTED TRAJS TRAINING FALSE)
+    unnormalize_outputs: True
+    segmented_trajs_training: True
+    normalize_inputs: True

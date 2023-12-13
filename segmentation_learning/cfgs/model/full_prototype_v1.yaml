@@ -1,0 +1,61 @@
+reconstruction_loss_weight: 1.0
+abstract_transition_kl_weight: 0.0001 #0.0036 # 0.03
+abstract_kl_balance: 0.8
+state_transition_kl_weight: 0.3
+state_kl_balance: 0.8
+segmentation_kl_weight: 0.0001
+segmentation_kl_balance: 0.8
+time_loss_weight: 0.25
+init_temperature: 1.0 # Handled by scheduler
+time_grad_scalar: 1
+
+encoder_params: {layer_sizes: [], activate_last: False, activation: 'elu'}
+encoding_dim: 1024
+
+# null for learned segmentations
+fix_segmentation_period: null
+
+context_gru_hidden: 128
+
+segmentation_transformer_dim: 256
+segmentation_mlp_encoder_params: {layer_sizes: [256], activate_last: False, activation: 'elu'}
+# segmentation_transformer_encoder_layer_params: {nhead: 8, dim_feedforward: 256, batch_first: True, dropout: 0.1}
+segmentation_transformer_encoder_layer_params: {nhead: 8, dim_feedforward: 256, dropout: 0.1} # FOR RPR TRANSFORMER
+segmentation_transformer_encoder_params: {num_layers: 4}
+segmentation_post_params: {layer_sizes: [256], activate_last: False, activation: 'elu'}
+
+temporal_attention_dim: 256
+abstract_rep_stoch_dim: 128
+abstract_rep_deter_dim: 128
+compression_transformer_dim: 64
+compression_mlp_encoder_params: {layer_sizes: [256], activate_last: False, activation: 'elu'}
+compression_transformer_encoder_layer_params: {nhead: 8, dim_feedforward: 256, dropout: 0.1}
+compression_transformer_params: {num_layers: 4}
+compression_mlp_decoder_params: {layer_sizes: [256], activate_last: False, activation: 'elu'}
+abstract_rep_post_params: {layer_sizes: [256, 256], activate_last: False, activation: 'elu'}
+
+abstract_rep_mlp_encoder_params: {layer_sizes: [256], activate_last: False, activation: 'elu'}
+abstract_rep_transformer_dim: 64
+abstract_rep_transformer_encoder_layer_params: {nhead: 4, dim_feedforward: 256, batch_first: True, dropout: 0.0}
+abstract_rep_transformer_params: {num_layers: 2}
+abstract_rep_mlp_decoder_params: {layer_sizes: [256], activate_last: False, activation: 'elu'}
+
+abstract_rep_prior_params: {layer_sizes: [256, 256], activate_last: False, activation: 'elu'}
+
+state_rep_stoch_dim: 16
+state_rep_deter_dim: 16
+state_rep_post_params: {layer_sizes: [256], activate_last: False, activation: 'elu'}
+
+state_rep_mlp_encoder_params: {layer_sizes: [256], activate_last: False, activation: 'elu'}
+state_rep_context_encoder_params: {layer_sizes: [256], activate_last: False, activation: 'elu'}
+state_rep_transformer_dim: 64
+# state_rep_transformer_encoder_layer_params: {nhead: 4, dim_feedforward: 256, batch_first: True, dropout: 0.0}
+state_rep_transformer_encoder_layer_params: {nhead: 4, dim_feedforward: 256, dropout: 0.0}
+state_rep_transformer_params: {num_layers: 4}
+state_rep_mlp_decoder_params: {layer_sizes: [256], activate_last: False, activation: 'elu'}
+
+state_rep_prior_params: {layer_sizes: [256, 256], activate_last: False, activation: 'elu'}
+
+segmentation_prior_params: {layer_sizes: [256], activate_last: False, activation: 'elu'}
+
+decoder_params: {layer_sizes: [400, 400, 400, 400], activate_last: False, activation: 'elu'}

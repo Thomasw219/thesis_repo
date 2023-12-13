@@ -1,0 +1,122 @@
+msg: 'Fixed bidirectional gru representation'
+# msg: 'svlsm - detach term and obs decoding; sl 40, kl 0.1, min std 0.1'
+
+# Skill model
+model_type: 'svlsm' # flsm (fixed length sm)/ vlsm (variable length sm) / svlsm (supervised vlsm)
+# load_path: './logs/svlsm_kitchen_07-09-2023_16-46-09/last_model.pth'
+load_path: null
+load_model: False
+
+env_name: 'kitchen-partial-v0'
+# Termination (segmentation) model
+exp_name: 'svlsm_kitchen_variable_length_full_data'
+skill_length: 0 # 0 for variable lengths
+data_loader:
+    batch_size: 512
+    num_workers: 0
+data_dir: './data/segmented/kitchen-partial-v0_segmented.npy'
+
+# env_name: 'kitchen-mixed-v0'
+# # Termination (segmentation) model
+# exp_name: 'svlsm_kitchen_mixed_variable_length_full_data'
+# skill_length: 0 # 0 for variable lengths
+# data_loader:
+#     batch_size: 512
+#     num_workers: 0
+# data_dir: './data/segmented/kitchen-mixed-v0_segmented.npy'
+
+max_iters: 1000000
+
+# CHECK TERMINATION LOSS
+# ALSO CHECK SKILL BETA
+
+# env_name: 'kitchen-partial-v0'
+# exp_name: 'svlsm_kitchen_fixed_length_full_data'
+# skill_length: 36 # CHECK IF RIGHT FOR ENV
+# data_loader:
+#     batch_size: 512
+#     num_workers: 0
+# data_dir: './data/segmented/kitchen-partial-v0-fixed_length.npy'
+
+# env_name: 'kitchen-mixed-v0'
+# exp_name: 'svlsm_kitchen_mixed_fixed_length_full_data'
+# skill_length: 35 # CHECK IF RIGHT FOR ENV
+# data_loader:
+#     batch_size: 512
+#     num_workers: 0
+# data_dir: './data/segmented/kitchen-mixed-v0-fixed_length.npy'
+
+# Data
+data_sub_traj_len: 128
+load_generated_data: True
+noisy: False # use data with noisy actions
+train_dataset_fraction: 1.00
+eval_every: 20
+
+termination_threshold: 0.3
+
+log_online: False
+base_dir: './logs/' # Log dir
+model_save_freq: 10000
+
+device_id: 1
+
+# HPs
+n_epochs: 500000
+
+grad_clip: 50
+
+optimizer:
+    lr: 1.e-3
+    weight_decay: 1.e-4 # 1.e-4
+
+scheduler_class: 'plateau' # cyclic or plateau
+
+cyclic:
+    base_lr: 0.00001
+    max_lr: 0.0003
+    step_size_up: 1000
+    cycle_momentum: False
+
+plateau:
+    mode: 'min'
+    factor: 0.9
+    patience: 10000
+
+
+model:
+    encoder_embedding_dim: 200
+    encoder_mlp_layers: [256, 256]
+    causal_encoder_rnn_hidden_dim: 200
+    noncausal_encoder_rnn_hidden_dim: 256
+    noncausal_encoder_rnn_num_layers: 1
+    skill_dim: 64
+    detach_skills: True
+    detach_termination_skills: True
+    skill_prior_layers: []
+    skill_posterior_layers: [256, 256]
+    obs_decoder_layers: [256, 256]
+    actions_decoder_layers: [400, 400, 400, 400]
+    termination_decoder_layers: [400, 400, 400, 400]
+    termination_loss_coeff: 50.0
+    # termination_loss_coeff: 0.0
+    skill_beta: 0.075
+    # skill_beta: 0.05
+    actions_loss_coeff: 1
+    obs_loss_coeff: 1
+    obs_std_min: 0.05
+    actions_std_min: 0.05
+    init_obs_std_min: 0.003 # std for the first two decodings # Warning: not being used
+    init_actions_std_min: null # Warning: not being used
+    train_prior_everywhere: False
+    unnormalize_outputs: True
+    normalize_inputs: False
+    segmented_trajs_training: True
+    kitchen_remove_goal: True
+    state_encode_only: False
+
+    vampprior: False
+    vampprior_num_pseudoinputs: 12
+    vampprior_pseudoinput_dim: 64
+    vampprior_conditional_pseudoinput_converter_layers: [256, 256]
+    improved_estimator: False

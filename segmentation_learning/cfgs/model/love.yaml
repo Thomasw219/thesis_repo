@@ -1,0 +1,16 @@
+belief_size: 8
+state_size: 128
+num_layers: 1
+max_seg_len: 128
+max_seg_num: 128
+use_abs_pos_kl: True
+coding_len_coeff: 1.0
+
+latent_n: 30
+
+rec_coeff: 100.0
+vq_loss_coeff: 0.01
+state_kl_coeff: 0.0001
+mask_kl_coeff: 0.0001
+
+use_min_length_boundary_mask: True
